@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Assessment result | CodePrep</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand brand-light" th:href="@{/dashboard}"><span class="brand-mark">C</span> CodePrep</a>
+    <div class="topbar-actions"><a class="button button-quiet" th:href="@{/dashboard}">Dashboard</a></div>
+</header>
+<main class="page-shell">
+    <section class="result-banner">
+        <p class="eyebrow">ASSESSMENT COMPLETE</p>
+        <h1 th:text="|${category} result|">Your result</h1>
+        <div class="result-score" th:text="|${result.score} / ${result.total}|"></div>
+        <p class="muted" th:text="|${result.percentage}% correct|"></p>
+        <div class="result-stats">
+            <span><strong th:text="${result.score}"></strong> correct</span>
+            <span><strong th:text="${result.incorrectCount}"></strong> incorrect</span>
+            <span><strong th:text="${result.unansweredCount}"></strong> unanswered</span>
+        </div>
+        <div class="result-actions">
+            <a class="button button-primary" th:href="@{/quiz(category=${category})}">Retake assessment</a>
+            <a class="button button-outline" th:href="@{/categories}">Choose another topic</a>
+            <a class="button button-quiet" th:href="@{/dashboard}">Back to dashboard</a>
+        </div>
+    </section>
+
+    <section class="panel review-panel">
+        <div class="section-heading"><div><p class="eyebrow">LEARN FROM YOUR RESULT</p><h2>Answer review</h2></div></div>
+        <article class="review-item" th:each="review : ${result.reviews}">
+            <div class="review-title">
+                <span class="question-index" th:text="|Q${review.number}|"></span>
+                <h3 th:text="${review.prompt}"></h3>
+                <span class="review-status" th:classappend="${review.correct} ? ' status-correct' : ' status-incorrect'"
+                      th:text="${review.correct} ? 'Correct' : 'Review'"></span>
+            </div>
+            <p><strong>Your answer:</strong>
+                <span th:text="${#lists.isEmpty(review.selectedAnswers) ? 'Not answered' : #strings.listJoin(review.selectedAnswers, ', ')}"></span>
+            </p>
+            <p class="correct-answer"><strong>Correct answer:</strong>
+                <span th:text="${#strings.listJoin(review.correctAnswers, ', ')}"></span>
+            </p>
+            <pre class="code-snippet" th:if="${review.codeSnippet != null}"><code th:text="${review.codeSnippet}"></code></pre>
+            <p th:if="${review.expectedOutput != null}"><strong>Expected output / behavior:</strong>
+                <span th:text="${review.expectedOutput}"></span>
+            </p>
+            <p><strong>Explanation:</strong> <span th:text="${review.explanation}"></span></p>
+        </article>
+    </section>
+</main>
+<footer class="site-footer">CodePrep · Java assessment platform</footer>
+</body>
+</html>

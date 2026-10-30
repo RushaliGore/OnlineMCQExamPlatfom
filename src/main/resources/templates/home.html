@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CodePrep | Java Assessment Platform</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="landing-body">
+<header class="topbar topbar-landing">
+    <a class="brand brand-light" th:href="@{/}"><span class="brand-mark">C</span> CodePrep</a>
+    <nav class="topbar-nav" aria-label="Main navigation">
+        <a th:href="@{/categories}">Categories</a>
+        <a th:href="@{/quiz}">Practice</a>
+        <a th:href="@{/login}">Login</a>
+    </nav>
+    <div class="topbar-actions">
+        <a class="button button-primary" th:href="@{/register}">Create account</a>
+    </div>
+</header>
+
+<main class="landing-shell">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <p class="eyebrow">PROFESSIONAL JAVA PREP</p>
+            <h1>Build depth, accuracy, and interview confidence with CodePrep.</h1>
+            <p class="muted">A polished practice platform for Java fundamentals, Hibernate, collection behavior, and interview-style MCQs designed for technical learners.</p>
+            <div class="hero-actions">
+                <a class="button button-primary" th:href="@{/quiz}">Start Practice</a>
+                <a class="button button-outline" th:href="@{/categories}">Browse topics</a>
+            </div>
+            <ul class="benefit-list">
+                <li>Focused Java MCQ practice</li>
+                <li>Real question coverage across core topics</li>
+                <li>Performance tracking for every attempt</li>
+            </ul>
+        </div>
+        <div class="hero-card" aria-label="Platform summary">
+            <div class="mini-stat">
+                <strong>15+</strong>
+                <span>Java topic areas</span>
+            </div>
+            <div class="mini-stat">
+                <strong>11</strong>
+                <span>Current assessment questions</span>
+            </div>
+            <div class="mini-stat">
+                <strong>1-click</strong>
+                <span>Mock exam and review flow</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="feature-row" aria-label="Platform metrics">
+        <article class="feature-tile">
+            <span class="tile-number">15</span>
+            <span class="tile-label">Exam categories</span>
+        </article>
+        <article class="feature-tile">
+            <span class="tile-number">Java 21</span>
+            <span class="tile-label">Modern Spring Boot stack</span>
+        </article>
+        <article class="feature-tile">
+            <span class="tile-number">100%</span>
+            <span class="tile-label">Server-side scoring</span>
+        </article>
+    </section>
+
+    <section class="showcase-panel">
+        <div class="section-heading compact">
+            <div>
+                <p class="eyebrow">TOPIC AREAS</p>
+                <h2>Practice the Java concepts that matter most.</h2>
+            </div>
+        </div>
+        <div class="feature-cards">
+            <article class="info-card">
+                <h3>Core Java</h3>
+                <p>OOP, polymorphism, loops, recursion, references, and language fundamentals.</p>
+            </article>
+            <article class="info-card">
+                <h3>Collections</h3>
+                <p>List, set, map behavior, equals/hashCode sensitivity and common interview traps.</p>
+            </article>
+            <article class="info-card">
+                <h3>Java 8+</h3>
+                <p>Lambdas, streams, method references and functional interfaces for modern Java.</p>
+            </article>
+            <article class="info-card">
+                <h3>Hibernate</h3>
+                <p>ORM relationships, join tables, entity mapping and JPA patterns used in Java apps.</p>
+            </article>
+        </div>
+    </section>
+</main>
+<footer class="site-footer">CodePrep · Java assessment platform</footer>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exam categories | CodePrep</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand brand-light" th:href="@{/}"><span class="brand-mark">C</span> CodePrep</a>
+    <nav class="topbar-nav" aria-label="Main navigation">
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/categories}">Categories</a>
+        <a th:href="@{/login}">Login</a>
+    </nav>
+    <div class="topbar-actions">
+        <a class="button button-quiet" th:href="@{/quiz}">Practice now</a>
+    </div>
+</header>
+
+<main class="page-shell">
+    <section class="welcome-panel compact-panel">
+        <div>
+            <p class="eyebrow">CATEGORY DIRECTORY</p>
+            <h1>Choose a Java topic to begin.</h1>
+            <p class="muted">Coverage is driven by the active question bank, so counts and topic availability stay aligned with the platform data.</p>
+        </div>
+        <a class="button button-primary" th:href="@{/quiz}">Take a mock test</a>
+    </section>
+
+    <section class="panel panel-separator">
+        <div class="category-grid category-grid-large">
+            <article class="category-tile" th:each="category : ${categories}">
+                <div class="category-header">
+                    <span class="category-badge" th:text="${category.difficulty}">Beginner</span>
+                    <span class="category-count" th:text="|${category.questionCount} Q|">0 Q</span>
+                </div>
+                <h3 th:text="${category.name}">Category name</h3>
+                <p th:text="${category.description}">Description</p>
+                <div class="category-meta">
+                    <span th:text="${category.duration}">20 min</span>
+                    <span th:text="|${category.questionCount} questions|">0 questions</span>
+                </div>
+                <a class="button button-outline button-small" th:href="@{/quiz(category=${category.name})}">Start exam</a>
+            </article>
+        </div>
+    </section>
+</main>
+<footer class="site-footer">CodePrep · Java assessment platform</footer>
+</body>
+</html>

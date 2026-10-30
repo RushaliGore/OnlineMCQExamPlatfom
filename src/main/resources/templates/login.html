@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in | ExamPro</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <a class="brand" th:href="@{/login}"><span class="brand-mark">E</span> ExamPro</a>
+    <section class="auth-card">
+        <p class="eyebrow">STUDENT PORTAL</p>
+        <h1>Welcome back</h1>
+        <p class="muted">Sign in to continue your Java and Hibernate assessment.</p>
+
+        <div class="notice notice-error" th:if="${param.error}">
+            Sign in failed. Check your details and make sure your email is verified.
+        </div>
+        <div class="notice notice-success" th:if="${param.logout}">
+            You have been signed out.
+        </div>
+
+        <form th:action="@{/login}" method="post" class="form-stack">
+            <label for="username">Email address</label>
+            <input id="username" name="username" type="email" autocomplete="email" maxlength="254" required>
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+            <button class="button button-primary button-full" type="submit">Sign in</button>
+        </form>
+
+        <p class="auth-switch">New to ExamPro? <a th:href="@{/register}">Create a student account</a></p>
+    </section>
+    <p class="auth-footnote">Your answers are graded securely on the server.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Student dashboard | CodePrep</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand brand-light" th:href="@{/dashboard}"><span class="brand-mark">C</span> CodePrep</a>
+    <nav class="topbar-nav" aria-label="Main navigation">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/categories}">Categories</a>
+        <a th:href="@{/quiz}">Practice</a>
+    </nav>
+    <div class="topbar-actions">
+        <span class="student-label" th:text="${student.displayName}"></span>
+        <form th:action="@{/logout}" method="post"><button class="button button-quiet" type="submit">Sign out</button></form>
+    </div>
+</header>
+
+<main class="page-shell">
+    <section class="welcome-panel">
+        <div>
+            <p class="eyebrow">STUDENT DASHBOARD</p>
+            <h1>Welcome back, <span th:text="${student.displayName}">Student</span> 👋</h1>
+            <p class="muted">Track performance, explore Java topic areas, and continue with focused mock assessments.</p>
+        </div>
+        <div class="hero-actions">
+            <a class="button button-primary" th:href="@{/quiz}">Continue practice</a>
+            <a class="button button-outline" th:href="@{/categories}">Explore topics</a>
+        </div>
+    </section>
+
+    <section class="stat-grid" aria-label="Assessment details">
+        <article class="stat-card">
+            <span class="stat-number" th:text="${questionCount}">11</span>
+            <span class="stat-label">Questions in bank</span>
+        </article>
+        <article class="stat-card">
+            <span class="stat-number" th:text="${attemptCount}">0</span>
+            <span class="stat-label">Attempts recorded</span>
+        </article>
+        <article class="stat-card">
+            <span class="stat-number" th:text="|${bestScore}%|">0%</span>
+            <span class="stat-label">Best percentage</span>
+        </article>
+    </section>
+
+    <section class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">EXAM TRACKER</p>
+                <h2>Java topic coverage</h2>
+            </div>
+            <a class="text-link" th:href="@{/categories}">View all categories</a>
+        </div>
+        <div class="category-grid">
+            <article class="category-tile" th:each="category : ${categories}">
+                <div class="category-header">
+                    <span class="category-badge" th:text="${category.difficulty}">Beginner</span>
+                    <span class="category-count" th:text="|${category.questionCount} Q|">0 Q</span>
+                </div>
+                <h3 th:text="${category.name}">Core Java Fundamentals</h3>
+                <p th:text="${category.description}">Description</p>
+                <div class="category-footer">
+                    <span th:text="${category.duration}">20 min</span>
+                    <a th:href="@{/quiz(category=${category.name})}">Start</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="panel panel-separator">
+        <div class="section-heading">
+            <div><p class="eyebrow">YOUR PROGRESS</p><h2>Recent attempts</h2></div>
+            <a class="text-link" th:href="@{/quiz}">Take the assessment</a>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(attempts)}">
+            <p>No attempts yet. Complete an assessment to unlock your progress history and score insights.</p>
+        </div>
+        <div class="table-wrap" th:unless="${#lists.isEmpty(attempts)}">
+            <table>
+                <thead><tr><th>Date</th><th>Category</th><th>Score</th><th>Percentage</th></tr></thead>
+                <tbody>
+                <tr th:each="attempt : ${attempts}">
+                    <td th:text="${#temporals.format(attempt.submittedAt, 'MMM d, yyyy HH:mm')}"></td>
+                    <td th:text="${attempt.category}">Category</td>
+                    <td th:text="|${attempt.score} / ${attempt.questionCount}|"></td>
+                    <td><span class="score-pill" th:text="|${attempt.percentage}%|"></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<footer class="site-footer">CodePrep · Java assessment platform</footer>
+</body>
+</html>

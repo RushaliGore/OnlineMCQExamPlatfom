@@ -1,0 +1,591 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExamPro | MSQ Examination</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: #172554;
+    color: white;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h2 {
+    font-size: 25px;
+}
+
+header span {
+    color: #bfdbfe;
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1150px;
+    margin: 30px auto;
+    padding: 0 18px;
+}
+
+.exam-info {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.exam-info p {
+    margin-top: 8px;
+    color: #64748b;
+}
+
+.timer {
+    background: #fff1f2;
+    color: #be123c;
+    padding: 13px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 22px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px #0f172a0a;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.progress {
+    height: 7px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 28px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #2563eb;
+    transition: width .2s;
+}
+
+.question {
+    font-size: 21px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.instruction {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 24px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 16px;
+    border: 1px solid #dbe3ef;
+    border-radius: 9px;
+    margin-bottom: 13px;
+    cursor: pointer;
+}
+
+.option:hover {
+    background: #f8faff;
+    border-color: #2563eb;
+}
+
+.option.selected {
+    background: #eff6ff;
+    border-color: #2563eb;
+}
+
+.option input {
+    width: 17px;
+    height: 17px;
+    accent-color: #2563eb;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+button {
+    padding: 12px 19px;
+    border: none;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.primary {
+    background: #2563eb;
+    color: white;
+}
+
+.secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.submit {
+    background: #15803d;
+    color: white;
+    width: 100%;
+    margin-top: 22px;
+}
+
+.palette {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.palette button {
+    padding: 13px 0;
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.palette button.current {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.palette button.answered {
+    background: #15803d;
+    color: white;
+}
+
+.legend {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 2;
+}
+
+.stats {
+    border-top: 1px solid #e2e8f0;
+    margin-top: 22px;
+    padding-top: 15px;
+    line-height: 2.2;
+    color: #475569;
+    font-size: 14px;
+}
+
+#result {
+    display: none;
+}
+
+.score {
+    font-size: 38px;
+    color: #15803d;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+.review-item {
+    padding: 18px 0;
+    border-bottom: 1px solid #e2e8f0;
+    line-height: 1.9;
+}
+
+.correct {
+    color: #15803d;
+}
+
+.incorrect {
+    color: #be123c;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+@media(max-width: 750px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .question {
+        font-size: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>ExamPro</h2>
+    <span>Online MSQ Examination</span>
+</header>
+
+<main class="container">
+
+    <section class="exam-info">
+        <div>
+            <h2>Java & Hibernate Assessment</h2>
+            <p>Multiple Select Questions | 3 Questions | 5 Minutes</p>
+        </div>
+
+        <div class="timer" id="timer">05:00</div>
+    </section>
+
+    <section id="exam">
+        <div class="layout">
+
+            <div class="card">
+                <div class="progress-info">
+                    <span id="questionNumber"></span>
+                    <span id="answeredText"></span>
+                </div>
+
+                <div class="progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <h3 class="question" id="questionText"></h3>
+                <p class="instruction">
+                    Select all correct options. You may select more than one.
+                </p>
+
+                <div id="options"></div>
+
+                <div class="actions">
+                    <button class="secondary" id="prevBtn"
+                            onclick="moveQuestion(-1)">Previous</button>
+
+                    <button class="primary" id="nextBtn"
+                            onclick="moveQuestion(1)">Next</button>
+                </div>
+            </div>
+
+            <aside class="card">
+                <h3>Question Palette</h3>
+                <p class="legend">
+                    Blue outline: Current question<br>
+                    Green: Answered<br>
+                    Grey: Not answered
+                </p>
+
+                <div class="palette" id="palette"></div>
+
+                <div class="stats">
+                    <p>Total: <strong id="total">3</strong></p>
+                    <p>Answered: <strong id="answered">0</strong></p>
+                    <p>Unanswered: <strong id="unanswered">3</strong></p>
+                </div>
+
+                <button class="submit" onclick="submitExam(false)">
+                    Submit Exam
+                </button>
+            </aside>
+
+        </div>
+    </section>
+
+    <section class="card" id="result">
+        <h2>Examination Result</h2>
+        <div class="score" id="score"></div>
+        <p id="percentage"></p>
+
+        <div class="stats" id="resultStats"></div>
+
+        <h3 style="margin-top:25px">Answer Review</h3>
+        <div id="review"></div>
+
+        <button class="primary" style="margin-top:20px"
+                onclick="location.reload()">Try Again</button>
+    </section>
+
+</main>
+
+<footer>ExamPro | Online Examination System</footer>
+
+<script>
+const questions = [
+    {
+        question: "Which collections allow duplicate elements?",
+        options: ["ArrayList", "LinkedList", "Vector"],
+        correct: [0, 1, 2]
+    },
+    {
+        question: "Which are valid Hibernate annotations?",
+        options: ["@Entity", "@Id", "@OneToMany"],
+        correct: [0, 1, 2]
+    },
+    {
+        question: "Which are Java 8 features?",
+        options: [
+            "Lambda expressions",
+            "Stream API",
+            "Method references"
+        ],
+        correct: [0, 1, 2]
+    }
+];
+
+let current = 0;
+let answers = questions.map(() => []);
+let remaining = 300;
+let finished = false;
+
+function renderQuestion() {
+    const q = questions[current];
+
+    document.getElementById("questionNumber").textContent =
+        `Question ${current + 1} of ${questions.length}`;
+
+    document.getElementById("questionText").textContent = q.question;
+
+    document.getElementById("progressBar").style.width =
+        `${((current + 1) / questions.length) * 100}%`;
+
+    const options = document.getElementById("options");
+    options.innerHTML = "";
+
+    q.options.forEach((option, index) => {
+        const label = document.createElement("label");
+        const selected = answers[current].includes(index);
+
+        label.className = "option" + (selected ? " selected" : "");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = selected;
+
+        checkbox.addEventListener("change", () => {
+            if (checkbox.checked) {
+                if (!answers[current].includes(index)) {
+                    answers[current].push(index);
+                }
+            } else {
+                answers[current] = answers[current].filter(
+                    value => value !== index
+                );
+            }
+
+            renderQuestion();
+        });
+
+        const text = document.createElement("span");
+        text.textContent = String.fromCharCode(65 + index) + ". " + option;
+
+        label.appendChild(checkbox);
+        label.appendChild(text);
+        options.appendChild(label);
+    });
+
+    document.getElementById("prevBtn").disabled = current === 0;
+
+    document.getElementById("nextBtn").textContent =
+        current === questions.length - 1 ? "Review" : "Next";
+
+    renderPalette();
+    updateCounts();
+}
+
+function renderPalette() {
+    const palette = document.getElementById("palette");
+    palette.innerHTML = "";
+
+    questions.forEach((q, index) => {
+        const button = document.createElement("button");
+        button.textContent = index + 1;
+
+        if (answers[index].length > 0) {
+            button.classList.add("answered");
+        }
+
+        if (index === current) {
+            button.classList.add("current");
+        }
+
+        button.onclick = () => {
+            current = index;
+            renderQuestion();
+        };
+
+        palette.appendChild(button);
+    });
+}
+
+function updateCounts() {
+    const count = answers.filter(a => a.length > 0).length;
+
+    document.getElementById("answeredText").textContent =
+        `Answered: ${count}`;
+
+    document.getElementById("answered").textContent = count;
+    document.getElementById("unanswered").textContent =
+        questions.length - count;
+}
+
+function moveQuestion(direction) {
+    if (direction === 1 && current === questions.length - 1) {
+        alert("You have reached the last question. Review your answers and submit.");
+        return;
+    }
+
+    current += direction;
+    renderQuestion();
+}
+
+function submitExam(autoSubmit) {
+    if (finished) return;
+
+    if (!autoSubmit &&
+        !confirm("Are you sure you want to submit your exam?")) {
+        return;
+    }
+
+    finished = true;
+    clearInterval(timerInterval);
+
+    let score = 0;
+
+    questions.forEach((q, i) => {
+        const selected = [...answers[i]].sort((a, b) => a - b);
+        const correct = [...q.correct].sort((a, b) => a - b);
+
+        if (
+            selected.length === correct.length &&
+            selected.every((value, index) => value === correct[index])
+        ) {
+            score++;
+        }
+    });
+
+    document.getElementById("exam").style.display = "none";
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("score").textContent =
+        `${score} / ${questions.length}`;
+
+    document.getElementById("percentage").textContent =
+        `Percentage: ${Math.round(score / questions.length * 100)}%`;
+
+    document.getElementById("resultStats").innerHTML =
+        `<p>Correct questions: ${score}</p>
+         <p>Incorrect questions: ${
+            answers.filter((a, i) =>
+                a.length > 0 && !isCorrect(a, questions[i].correct)
+            ).length
+         }</p>
+         <p>Unanswered questions: ${
+            answers.filter(a => a.length === 0).length
+         }</p>
+         <p>${autoSubmit ? "Time expired. Exam submitted automatically." : "Exam submitted successfully."}</p>`;
+
+    const review = document.getElementById("review");
+    review.innerHTML = "";
+
+    questions.forEach((q, i) => {
+        const div = document.createElement("div");
+        div.className = "review-item";
+
+        const yourAnswer = answers[i].length
+            ? answers[i].map(index => q.options[index]).join(", ")
+            : "Not answered";
+
+        const correctAnswer = q.correct
+            .map(index => q.options[index]).join(", ");
+
+        const correct = isCorrect(answers[i], q.correct);
+
+        const heading = document.createElement("strong");
+        heading.textContent = `Q${i + 1}. ${q.question}`;
+
+        const your = document.createElement("p");
+        your.textContent = `Your answer: ${yourAnswer}`;
+        your.className = correct ? "correct" : "incorrect";
+
+        const expected = document.createElement("p");
+        expected.textContent = `Correct answer: ${correctAnswer}`;
+        expected.className = "correct";
+
+        div.append(heading, your, expected);
+        review.appendChild(div);
+    });
+}
+
+function isCorrect(selected, correct) {
+    if (selected.length !== correct.length) return false;
+
+    return [...selected].sort((a, b) => a - b).every(
+        (value, index) => value === [...correct].sort((a, b) => a - b)[index]
+    );
+}
+
+const timerInterval = setInterval(() => {
+    if (finished) return;
+
+    remaining--;
+
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+
+    document.getElementById("timer").textContent =
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+
+    if (remaining <= 0) {
+        submitExam(true);
+    }
+}, 1000);
+
+document.getElementById("total").textContent = questions.length;
+renderQuestion();
+</script>
+
+</body>
+</html>

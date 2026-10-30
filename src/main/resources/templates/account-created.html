@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Account created | ExamPro</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <a class="brand" th:href="@{/login}"><span class="brand-mark">E</span> ExamPro</a>
+    <section class="auth-card auth-card-centered">
+        <div class="status-icon">✓</div>
+        <p class="eyebrow">ACCOUNT READY</p>
+        <h1>Your account is created</h1>
+        <p class="muted">Email verification is turned off. Sign in with the email address and password you just registered.</p>
+        <a class="button button-primary button-link" th:href="@{/login}">Go to sign in</a>
+    </section>
+</main>
+</body>
+</html>

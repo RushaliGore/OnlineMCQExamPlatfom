@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resend verification | ExamPro</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <a class="brand" th:href="@{/login}"><span class="brand-mark">E</span> ExamPro</a>
+    <section class="auth-card">
+        <p class="eyebrow">EMAIL VERIFICATION</p>
+        <h1>Request a new link</h1>
+        <p class="muted">Email verification is not required for this app. Go to sign in and use your student account.</p>
+        <div class="notice notice-error" th:if="${formError}" th:text="${formError}"></div>
+        <div class="notice notice-success" th:if="${submitted}">
+            If an unverified account exists for that address, a new link has been sent.
+        </div>
+        <a class="button button-primary button-link" th:href="@{/login}">Go to sign in</a>
+    </section>
+</main>
+</body>
+</html>

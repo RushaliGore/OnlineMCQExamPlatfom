@@ -1,0 +1,612 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExamPro - Online MCQ Exam</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f5fb;
+    color: #202b43;
+}
+
+header {
+    background: #172554;
+    color: white;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h2 {
+    font-size: 25px;
+}
+
+header span {
+    color: #bfdbfe;
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1150px;
+    margin: 30px auto;
+    padding: 0 18px;
+}
+
+.exam-info {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    box-shadow: 0 3px 15px #1725540d;
+}
+
+.exam-info p {
+    color: #64748b;
+    margin-top: 8px;
+}
+
+.timer {
+    background: #fff1f2;
+    color: #be123c;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 270px;
+    gap: 22px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px #1725540d;
+}
+
+.progress-row {
+    display: flex;
+    justify-content: space-between;
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+.progress {
+    height: 7px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    margin-bottom: 28px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0;
+    background: #2563eb;
+    transition: width .2s;
+}
+
+.question {
+    font-size: 21px;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.option {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    margin-bottom: 13px;
+    border: 1px solid #dbe3ef;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.option:hover {
+    border-color: #2563eb;
+    background: #f8faff;
+}
+
+.option.selected {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.option input {
+    accent-color: #2563eb;
+    width: 17px;
+    height: 17px;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+button {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.primary {
+    background: #2563eb;
+    color: white;
+}
+
+.secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.submit {
+    background: #15803d;
+    color: white;
+}
+
+.sidebar h3 {
+    margin-bottom: 12px;
+}
+
+.legend {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 2;
+    margin-bottom: 15px;
+}
+
+.palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 9px;
+}
+
+.palette button {
+    padding: 11px 0;
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.palette button.current {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.palette button.answered {
+    background: #15803d;
+    color: white;
+}
+
+.palette button.visited:not(.answered) {
+    background: #fef3c7;
+}
+
+.summary {
+    margin-top: 25px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 18px;
+    color: #475569;
+    font-size: 14px;
+    line-height: 2;
+}
+
+#result {
+    display: none;
+    margin-top: 22px;
+}
+
+.score {
+    font-size: 36px;
+    color: #15803d;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.review-item {
+    border-top: 1px solid #e2e8f0;
+    padding: 15px 0;
+    line-height: 1.8;
+}
+
+.correct-text { color: #15803d; }
+.wrong-text { color: #be123c; }
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+@media(max-width: 750px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        order: -1;
+    }
+
+    .palette {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .question {
+        font-size: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>ExamPro</h2>
+    <span>Online Examination System</span>
+</header>
+
+<main class="container">
+
+    <section class="exam-info">
+        <div>
+            <h2>Java & Hibernate MCQ Test</h2>
+            <p>Candidate: Student | Total Questions: 5 | Duration: 10 minutes</p>
+        </div>
+        <div class="timer" id="timer">10:00</div>
+    </section>
+
+    <div id="exam">
+        <div class="layout">
+
+            <section class="card">
+                <div class="progress-row">
+                    <span id="questionNumber">Question 1 of 5</span>
+                    <span id="answeredCount">Answered: 0</span>
+                </div>
+
+                <div class="progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <h3 class="question" id="questionText"></h3>
+
+                <div id="options"></div>
+
+                <div class="actions">
+                    <button class="secondary" id="previousBtn"
+                            onclick="previousQuestion()">Previous</button>
+
+                    <button class="primary" id="nextBtn"
+                            onclick="nextQuestion()">Next</button>
+                </div>
+            </section>
+
+            <aside class="card sidebar">
+                <h3>Question Palette</h3>
+
+                <p class="legend">
+                    Blue outline: Current<br>
+                    Green: Answered<br>
+                    Yellow: Visited, unanswered<br>
+                    Grey: Not visited
+                </p>
+
+                <div class="palette" id="palette"></div>
+
+                <div class="summary">
+                    <p>Total: <strong id="totalCount">5</strong></p>
+                    <p>Answered: <strong id="sideAnswered">0</strong></p>
+                    <p>Unanswered: <strong id="unansweredCount">5</strong></p>
+                </div>
+
+                <button class="submit" style="width:100%; margin-top:20px"
+                        onclick="submitExam(false)">
+                    Submit Exam
+                </button>
+            </aside>
+
+        </div>
+    </div>
+
+    <section class="card" id="result">
+        <h2>Exam Result</h2>
+        <p class="score" id="score"></p>
+        <p id="resultMessage"></p>
+        <div class="summary" id="resultSummary"></div>
+
+        <h3 style="margin-top:25px">Answer Review</h3>
+        <div id="review"></div>
+
+        <button class="primary" onclick="location.reload()"
+                style="margin-top:20px">Try Again</button>
+    </section>
+
+</main>
+
+<footer>ExamPro | Online Assessment Platform</footer>
+
+<script>
+const questions = [
+    {
+        question: "What is the full form of JVM?",
+        options: [
+            "Java Variable Method",
+            "Java Virtual Machine",
+            "Java Verified Mode",
+            "Java Visual Manager"
+        ],
+        answer: 1
+    },
+    {
+        question: "Which keyword is used to declare a constant-like variable in Java?",
+        options: [
+            "static",
+            "void",
+            "final",
+            "private"
+        ],
+        answer: 2
+    },
+    {
+        question: "Which Hibernate annotation defines a many-to-many relationship?",
+        options: [
+            "@OneToOne",
+            "@ManyToOne",
+            "@OneToMany",
+            "@ManyToMany"
+        ],
+        answer: 3
+    },
+    {
+        question: "Which annotation can configure a join table?",
+        options: [
+            "@JoinTable",
+            "@Column",
+            "@Transient",
+            "@GeneratedValue"
+        ],
+        answer: 0
+    },
+    {
+        question: "Which block is commonly used for cleanup code that should run after try/catch?",
+        options: [
+            "static",
+            "finally",
+            "switch",
+            "extends"
+        ],
+        answer: 1
+    }
+];
+
+let current = 0;
+let answers = Array(questions.length).fill(null);
+let visited = Array(questions.length).fill(false);
+let remaining = 600;
+let finished = false;
+
+function renderQuestion() {
+    if (finished) return;
+
+    visited[current] = true;
+
+    const q = questions[current];
+
+    document.getElementById("questionNumber").textContent =
+        `Question ${current + 1} of ${questions.length}`;
+
+    document.getElementById("questionText").textContent = q.question;
+
+    document.getElementById("progressBar").style.width =
+        `${((current + 1) / questions.length) * 100}%`;
+
+    document.getElementById("options").innerHTML = "";
+
+    q.options.forEach((option, index) => {
+        const label = document.createElement("label");
+        label.className = "option" +
+            (answers[current] === index ? " selected" : "");
+
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "answer";
+        radio.value = index;
+        radio.checked = answers[current] === index;
+
+        radio.addEventListener("change", () => {
+            answers[current] = index;
+            renderQuestion();
+        });
+
+        const text = document.createElement("span");
+        text.textContent = String.fromCharCode(65 + index) + ". " + option;
+
+        label.appendChild(radio);
+        label.appendChild(text);
+        document.getElementById("options").appendChild(label);
+    });
+
+    document.getElementById("previousBtn").disabled = current === 0;
+
+    document.getElementById("nextBtn").textContent =
+        current === questions.length - 1 ? "Review Exam" : "Next";
+
+    renderPalette();
+    updateCounts();
+}
+
+function renderPalette() {
+    const palette = document.getElementById("palette");
+    palette.innerHTML = "";
+
+    questions.forEach((q, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = index + 1;
+
+        if (answers[index] !== null) {
+            btn.classList.add("answered");
+        } else if (visited[index]) {
+            btn.classList.add("visited");
+        }
+
+        if (current === index) {
+            btn.classList.add("current");
+        }
+
+        btn.onclick = () => {
+            current = index;
+            renderQuestion();
+        };
+
+        palette.appendChild(btn);
+    });
+}
+
+function updateCounts() {
+    const count = answers.filter(a => a !== null).length;
+
+    document.getElementById("answeredCount").textContent =
+        "Answered: " + count;
+
+    document.getElementById("sideAnswered").textContent = count;
+
+    document.getElementById("unansweredCount").textContent =
+        questions.length - count;
+}
+
+function previousQuestion() {
+    if (current > 0) {
+        current--;
+        renderQuestion();
+    }
+}
+
+function nextQuestion() {
+    if (current < questions.length - 1) {
+        current++;
+        renderQuestion();
+    } else {
+        const unanswered = answers.filter(a => a === null).length;
+
+        alert("Review complete. Unanswered questions: " + unanswered +
+              ". Submit when you are ready.");
+    }
+}
+
+function submitExam(autoSubmitted) {
+    if (finished) return;
+
+    if (!autoSubmitted &&
+        !confirm("Are you sure you want to submit the exam?")) {
+        return;
+    }
+
+    finished = true;
+    clearInterval(timerInterval);
+
+    let score = 0;
+
+    questions.forEach((q, i) => {
+        if (answers[i] === q.answer) score++;
+    });
+
+    document.getElementById("exam").style.display = "none";
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("score").textContent =
+        `${score} / ${questions.length}`;
+
+    document.getElementById("resultMessage").textContent =
+        `You scored ${Math.round(score / questions.length * 100)}%.` +
+        (autoSubmitted ? " Time is up; your exam was submitted automatically." : "");
+
+    document.getElementById("resultSummary").innerHTML =
+        `<p>Correct answers: ${score}</p>` +
+        `<p>Incorrect answers: ${answers.filter((a, i) =>
+            a !== null && a !== questions[i].answer).length}</p>` +
+        `<p>Unanswered: ${answers.filter(a => a === null).length}</p>`;
+
+    const review = document.getElementById("review");
+    review.innerHTML = "";
+
+    questions.forEach((q, i) => {
+        const div = document.createElement("div");
+        div.className = "review-item";
+
+        const yourAnswer = answers[i] === null
+            ? "Not answered"
+            : q.options[answers[i]];
+
+        const correctAnswer = q.options[q.answer];
+
+        div.innerHTML =
+            `<strong>Q${i + 1}. ${q.question}</strong><br>` +
+            `Your answer: <span class="${answers[i] === q.answer ?
+                "correct-text" : "wrong-text"}"></span><br>` +
+            `Correct answer: <span class="correct-text"></span>`;
+
+        div.querySelectorAll("span")[0].textContent = yourAnswer;
+        div.querySelectorAll("span")[1].textContent = correctAnswer;
+
+        review.appendChild(div);
+    });
+}
+
+const timerInterval = setInterval(() => {
+    if (finished) return;
+
+    remaining--;
+
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+
+    document.getElementById("timer").textContent =
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+
+    if (remaining <= 60) {
+        document.getElementById("timer").style.background = "#fee2e2";
+    }
+
+    if (remaining <= 0) {
+        submitExam(true);
+    }
+}, 1000);
+
+renderQuestion();
+</script>
+
+</body>
+</html>

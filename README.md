@@ -1,100 +1,39 @@
-# OnlineMCQExamPlatfom
-CodePrep – Online MCQ Exam Platform | A web-based Java assessment application featuring topic-wise Core Java MCQs, multiple-select questions, coding output challenges, timed examinations, and automated result evaluation using Java, Spring, Hibernate, and a database.
+# CodePrep Java Assessment Platform
 
-**CodePrep** is a web-based online examination platform designed to help students and aspiring Java developers practice Core Java concepts, prepare for technical interviews, and evaluate their programming knowledge through topic-wise multiple-choice assessments.
+CodePrep is a Spring Boot student assessment application using Spring MVC, Thymeleaf, Spring Security, Spring Data JPA, and Hibernate. It includes student registration, sign-in, category-based exams, server-side scoring, answer explanations, and saved attempt history.
 
-The application organizes Java questions into different categories, supports multiple-select questions (MSQs), and provides an examination interface with question navigation, a timer, and result evaluation.
+## Requirements
 
-## Features
+- Java 21 JDK with `JAVA_HOME` set to the JDK folder
 
-- **Topic-wise Examinations:** Practice Core Java, OOP, Strings and Arrays, Collections, Exception Handling, Java 8, Multithreading, JDBC, Hibernate, and other Java topics.
-- **Multiple-Select Questions (MSQs):** Select one or more correct answers for questions that support multiple selections.
-- **Java Coding Questions:** Practice code-output prediction, debugging, and Java programming concepts.
-- **Timed Examinations:** Complete assessments within a configured time limit.
-- **Question Navigation:** Move between questions and review your selections.
-- **Automated Evaluation:** Calculate examination scores based on submitted answers.
-- **Result Review:** Display scores, correct answers, and explanations after submission, where implemented.
-- **Hibernate ORM Integration:** Map Java entities to database tables and manage question and answer relationships.
-- **Responsive User Interface:** Provide a clean examination experience across desktop and mobile screens.
-- **Extensible Question Bank:** Add new topics and questions as the application develops.
+## Run locally
 
-## Technology Stack
+From the project directory in PowerShell:
 
-- **Backend:** Java, Spring
-- **ORM:** Hibernate
-- **Database:** Configured relational database
-- **Frontend:** HTML5, CSS3, JavaScript
-- **Development Tools:** Eclipse IDE / Visual Studio Code
-- **Version Control:** Git and GitHub
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
-*Update this list to match the exact technologies and database used in your final implementation.*
+The Maven wrapper downloads the project-pinned Maven distribution automatically. Open [http://localhost:8080](http://localhost:8080), create a student account, then sign in. Email verification is disabled by default for local development.
 
-## Java Topics Covered
+## Question bank
 
-1. Core Java Fundamentals
-2. Object-Oriented Programming
-3. Strings and Arrays
-4. Java Collections Framework
-5. Exception Handling
-6. Java 8 Features
-7. Multithreading and Concurrency
-8. Java I/O and File Handling
-9. Generics
-10. Java Reflection API
-11. JDBC
-12. Hibernate and ORM
-13. Java Coding Output Questions
-14. Java Interview Mock Tests
-15. Mixed Core Java Assessment
+The bundled [question-bank.json](./src/main/resources/question-bank.json) contains 300 multiple-select questions: 20 for each of the 15 Java categories. At startup, the application validates the full bank and imports it into the database in a transaction. Importing is idempotent by stable question ID, so restarting the app updates existing entries instead of creating duplicates.
 
-## Project Objectives
+Questions and options use separate relational entities: each question owns four option rows, and each option stores its own correctness flag. This one-to-many model supports per-option scoring metadata and question-specific explanations and code/output content without a many-to-many join table. Correctness flags, explanations, and expected outputs are not included in the active exam page model; the server evaluates exact option-set matches and reveals review details only after submission.
 
-- Improve Core Java knowledge through practical assessments.
-- Help students prepare for Java technical interviews.
-- Practice Java code-output and concept-based questions.
-- Provide an organized environment for topic-wise examination.
-- Demonstrate the integration of Java, Spring, Hibernate, and frontend technologies in a web application.
+The category page shows active database counts. Starting a category opens its own timed exam with navigation, answer persistence while navigating, a question palette, answer clearing, and review marking. Submission, scoring, and attempt persistence are handled by the server.
 
-## How It Works
+The default H2 database is stored under `data/` and survives restarts. For deployment, set `DATABASE_URL` to a PostgreSQL JDBC URL, along with `DATABASE_USERNAME` and `DATABASE_PASSWORD`. Set `APP_BASE_URL` to the public HTTPS URL and `COOKIE_SECURE=true` behind HTTPS.
 
-1. Open the application and browse the available exam categories.
-2. Select a Java topic.
-3. Start the examination and answer the questions.
-4. Navigate between questions and manage selected answers.
-5. Submit the examination before the timer expires.
-6. View the score and review answers, depending on the implemented features.
+## Optional email verification
 
-## Project Structure
+For deployments that need verified email addresses, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and `SMTP_FROM`, then set `REQUIRE_EMAIL_VERIFICATION=true`. Do not put real credentials in source files. Verification links expire after 24 hours and can only be used once.
 
-The project can be organized into the following layers:
+## Assessment behavior
 
-- **Entity Layer:** Java entities representing examination questions, answer options, categories, and related data.
-- **Persistence Layer:** Hibernate mappings and database operations.
-- **Service Layer:** Business logic for question management, examination evaluation, and results.
-- **Controller Layer:** Spring controllers or compatible web endpoints.
-- **Frontend Layer:** HTML, CSS, and JavaScript pages for categories, examinations, and results.
-
-The exact package and directory structure depends on the implementation in the repository.
-
-## Future Enhancements
-
-- Student registration and authentication.
-- Admin panel for managing questions and exam categories.
-- Expanded Java question bank with difficulty levels.
-- Randomized questions and options.
-- Exam history and performance analytics.
-- Topic-wise progress tracking.
-- Retry incorrect questions.
-- Additional programming languages and assessment categories.
-
-## Learning Outcomes
-
-This project demonstrates practical experience with Java web development, object-relational mapping, database integration, entity relationships, frontend design, examination workflows, and automated assessment logic.
-
-## Author
-
-Developed as a Java web development and interview preparation project.
-
-## License
-
-Add an appropriate open-source license if you intend to distribute the project publicly.
+- Exactly 15 categories with 20 active questions each.
+- Four answer options per question; multiple options may be correct.
+- Exact-set scoring: a question earns one point only when the submitted selection matches the complete correct set. Unanswered questions receive zero points without an additional penalty.
+- The browser does not receive correctness flags, explanations, or expected outputs before submission.
+- The result page shows selected and correct answers, explanations, and expected output where applicable.

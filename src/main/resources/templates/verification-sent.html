@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verify your email | ExamPro</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <a class="brand" th:href="@{/login}"><span class="brand-mark">E</span> ExamPro</a>
+    <section class="auth-card auth-card-centered">
+        <div class="status-icon">✉</div>
+        <p class="eyebrow">ONE LAST STEP</p>
+        <h1>Check your inbox</h1>
+        <p class="muted">We sent you a verification link. Open it within 24 hours to activate your student account, then sign in.</p>
+        <a class="button button-primary button-link" th:href="@{/login}">Go to sign in</a>
+    </section>
+</main>
+</body>
+</html>

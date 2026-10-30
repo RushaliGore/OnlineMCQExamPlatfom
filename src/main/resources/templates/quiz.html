@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Java assessment | CodePrep</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <style>
+        .exam-tools { display: grid; gap: 1rem; margin-bottom: 1.25rem; }
+        .exam-progress { display: flex; align-items: center; gap: 1rem; }
+        .exam-progress progress { flex: 1; height: .75rem; accent-color: #3b6eea; }
+        .question-palette { display: flex; flex-wrap: wrap; gap: .5rem; }
+        .palette-button { min-width: 2.5rem; min-height: 2.5rem; border: 1px solid #cbd5e1; border-radius: .5rem; background: white; cursor: pointer; }
+        .palette-button.is-current { outline: 2px solid #3b6eea; }
+        .palette-button.is-answered { background: #dbeafe; }
+        .palette-button.is-marked { border-color: #d97706; box-shadow: inset 0 0 0 1px #d97706; }
+        .question-controls { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .75rem; margin-top: 1.25rem; }
+        .question-controls > div { display: flex; flex-wrap: wrap; gap: .5rem; }
+        .code-snippet { overflow-x: auto; padding: 1rem; border-radius: .5rem; background: #111827; color: #f9fafb; }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <a class="brand brand-light" th:href="@{/dashboard}"><span class="brand-mark">C</span> CodePrep</a>
+    <div class="topbar-actions"><a class="button button-quiet" th:href="@{/categories}">Categories</a></div>
+</header>
+<main class="page-shell quiz-shell" th:data-duration-minutes="${durationMinutes}">
+    <section class="quiz-heading">
+        <div>
+            <p class="eyebrow">JAVA MULTIPLE-SELECT ASSESSMENT</p>
+            <h1 th:text="${category}">Java Assessment</h1>
+            <p class="muted" th:text="|${questions.size()} questions · Select all correct options.|"></p>
+        </div>
+        <div class="timer-card"><span class="timer-label">TIME REMAINING</span><strong id="timer">20:00</strong></div>
+    </section>
+
+    <div class="notice notice-error" th:if="${invalidAnswers}">
+        Some submitted options were invalid. Review the assessment and submit again.
+    </div>
+
+    <form id="quizForm" th:action="@{/quiz/submit}" method="post">
+        <input type="hidden" name="category" th:value="${category}">
+        <section class="exam-tools" aria-label="Exam navigation">
+            <div class="exam-progress">
+                <progress id="answerProgress" value="0" th:max="${questions.size()}"></progress>
+                <span id="progressLabel" th:text="|0 of ${questions.size()} answered|">0 answered</span>
+            </div>
+            <nav class="question-palette" aria-label="Question palette">
+                <button class="palette-button" type="button" th:each="question, loop : ${questions}"
+                        th:data-index="${loop.index}" th:text="${loop.count}"
+                        th:aria-label="|Go to question ${loop.count}|"></button>
+            </nav>
+        </section>
+
+        <section class="question-card" th:each="question, loop : ${questions}" th:data-index="${loop.index}">
+            <div class="question-meta">
+                <span class="question-index" th:text="|Question ${loop.count}|"></span>
+                <span class="question-type">Select all that apply</span>
+                <span class="question-type" th:text="${question.difficulty}">Difficulty</span>
+            </div>
+            <h2 th:text="${question.prompt}"></h2>
+            <pre class="code-snippet" th:if="${question.codeSnippet != null}"><code th:text="${question.codeSnippet}"></code></pre>
+            <div class="option-list">
+                <label class="answer-option" th:each="option : ${question.options}">
+                    <input type="checkbox" th:name="|q_${question.id}|" th:value="${option.id}">
+                    <span class="option-letter" th:text="${option.label}"></span>
+                    <span th:text="${option.text}"></span>
+                </label>
+            </div>
+            <div class="question-controls">
+                <div>
+                    <button class="button button-outline button-small" type="button" data-action="previous">Previous</button>
+                    <button class="button button-outline button-small" type="button" data-action="next">Next</button>
+                </div>
+                <div>
+                    <button class="button button-quiet" type="button" data-action="clear">Clear answer</button>
+                    <button class="button button-quiet" type="button" data-action="mark">Mark for review</button>
+                </div>
+            </div>
+        </section>
+        <div class="submit-bar">
+            <p>Answers are checked securely after submission. Correct options and explanations remain hidden during the exam.</p>
+            <button id="submitButton" class="button button-primary" type="submit">Submit assessment</button>
+        </div>
+    </form>
+</main>
+<footer class="site-footer">CodePrep · Java assessment platform</footer>
+<script>
+    (() => {
+        const form = document.getElementById("quizForm");
+        const cards = Array.from(document.querySelectorAll(".question-card"));
+        const palette = Array.from(document.querySelectorAll(".palette-button"));
+        const timer = document.getElementById("timer");
+        const progress = document.getElementById("answerProgress");
+        const progressLabel = document.getElementById("progressLabel");
+        const duration = Number(document.querySelector(".quiz-shell").dataset.durationMinutes);
+        let current = 0;
+        let remaining = duration * 60;
+        let submitted = false;
+        const marked = new Set();
+
+        function update() {
+            cards.forEach((card, index) => {
+                card.hidden = index !== current;
+                palette[index].classList.toggle("is-current", index === current);
+                palette[index].classList.toggle("is-answered", card.querySelectorAll("input:checked").length > 0);
+                palette[index].classList.toggle("is-marked", marked.has(index));
+                if (index === current) palette[index].setAttribute("aria-current", "step");
+                else palette[index].removeAttribute("aria-current");
+                card.querySelector('[data-action="previous"]').disabled = index === 0;
+                card.querySelector('[data-action="next"]').textContent = index === cards.length - 1 ? "Review first" : "Next";
+            });
+            const answered = cards.filter(card => card.querySelectorAll("input:checked").length > 0).length;
+            progress.value = answered;
+            progressLabel.textContent = `${answered} of ${cards.length} answered`;
+        }
+
+        palette.forEach(button => button.addEventListener("click", () => {
+            current = Number(button.dataset.index);
+            update();
+        }));
+        cards.forEach((card, index) => {
+            card.addEventListener("change", update);
+            card.querySelector('[data-action="previous"]').addEventListener("click", () => {
+                current = Math.max(0, index - 1);
+                update();
+            });
+            card.querySelector('[data-action="next"]').addEventListener("click", () => {
+                current = index === cards.length - 1 ? 0 : index + 1;
+                update();
+            });
+            card.querySelector('[data-action="clear"]').addEventListener("click", () => {
+                card.querySelectorAll("input").forEach(input => { input.checked = false; });
+                update();
+            });
+            card.querySelector('[data-action="mark"]').addEventListener("click", event => {
+                if (marked.has(index)) {
+                    marked.delete(index);
+                    event.currentTarget.textContent = "Mark for review";
+                } else {
+                    marked.add(index);
+                    event.currentTarget.textContent = "Marked for review";
+                }
+                update();
+            });
+        });
+
+        form.addEventListener("submit", () => {
+            submitted = true;
+            document.getElementById("submitButton").disabled = true;
+            document.getElementById("submitButton").textContent = "Submitting…";
+        });
+
+        update();
+        const interval = window.setInterval(() => {
+            if (submitted) {
+                window.clearInterval(interval);
+                return;
+            }
+            remaining -= 1;
+            timer.textContent = `${String(Math.floor(remaining / 60)).padStart(2, "0")}:${String(remaining % 60).padStart(2, "0")}`;
+            if (remaining <= 60) timer.classList.add("timer-warning");
+            if (remaining <= 0) {
+                window.clearInterval(interval);
+                form.requestSubmit();
+            }
+        }, 1000);
+    })();
+</script>
+</body>
+</html>

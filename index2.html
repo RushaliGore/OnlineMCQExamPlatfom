@@ -1,0 +1,558 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExamPro - Java MCQ Test</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f6fc;
+    color: #243047;
+}
+
+header {
+    background: #243b80;
+    color: white;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+header h2 {
+    font-size: 25px;
+}
+
+.timer {
+    background: white;
+    color: #243b80;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 18px;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 22px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 16px #15274b12;
+    margin-bottom: 20px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.progress {
+    height: 8px;
+    background: #e5eaf4;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 33.33%;
+    background: #4169e1;
+    transition: width 0.3s;
+}
+
+.question {
+    font-size: 23px;
+    line-height: 1.5;
+    margin: 22px 0 10px;
+}
+
+.hint {
+    color: #718096;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border: 1px solid #dce3ef;
+    padding: 16px;
+    margin: 12px 0;
+    border-radius: 9px;
+    cursor: pointer;
+    line-height: 1.5;
+    transition: 0.2s;
+}
+
+.option:hover {
+    border-color: #4169e1;
+    background: #f7f9ff;
+}
+
+.option input {
+    margin-top: 4px;
+    accent-color: #4169e1;
+}
+
+.option.selected {
+    border-color: #4169e1;
+    background: #edf2ff;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.primary {
+    background: #4169e1;
+    color: white;
+}
+
+.secondary {
+    background: #e9edf5;
+    color: #243047;
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.palette {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 18px 0;
+}
+
+.palette button {
+    background: #edf0f7;
+    color: #243047;
+    padding: 12px;
+}
+
+.palette button.active {
+    background: #4169e1;
+    color: white;
+}
+
+.palette button.answered {
+    border: 2px solid #24a06b;
+}
+
+.legend {
+    font-size: 13px;
+    line-height: 2;
+    color: #64748b;
+}
+
+.result {
+    text-align: center;
+    padding: 35px 20px;
+}
+
+.score {
+    font-size: 42px;
+    color: #243b80;
+    margin: 18px 0;
+}
+
+.review-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #e5eaf4;
+    line-height: 1.7;
+}
+
+.correct-text {
+    color: #168451;
+}
+
+.incorrect-text {
+    color: #d14343;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #718096;
+    font-size: 13px;
+}
+
+@media (max-width: 750px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    header h2 {
+        font-size: 21px;
+    }
+
+    .question {
+        font-size: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>ExamPro | Java Assessment</h2>
+    <div class="timer">Time Left: <span id="timer">05:00</span></div>
+</header>
+
+<div class="container">
+    <main>
+        <section class="card" id="examCard">
+            <div class="progress-info">
+                <span id="questionCount">Question 1 of 3</span>
+                <span id="answeredCount">Answered: 0</span>
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <h2 class="question" id="questionText"></h2>
+            <p class="hint">Select all applicable answers.</p>
+
+            <div id="options"></div>
+
+            <div class="actions">
+                <button class="secondary" id="previousBtn"
+                        onclick="moveQuestion(-1)">Previous</button>
+
+                <button class="primary" id="nextBtn"
+                        onclick="moveQuestion(1)">Next</button>
+            </div>
+        </section>
+
+        <section class="card result" id="resultCard" hidden>
+            <h2>Assessment Completed!</h2>
+            <p>Your test has been submitted.</p>
+            <div class="score" id="score"></div>
+            <p id="resultMessage"></p>
+            <br>
+            <button class="primary" onclick="showReview()">Review Answers</button>
+            <button class="secondary" onclick="restartExam()">Restart Test</button>
+        </section>
+
+        <section class="card" id="reviewCard" hidden>
+            <h2>Answer Review</h2>
+            <div id="reviewContent"></div>
+            <br>
+            <button class="primary" onclick="restartExam()">Try Again</button>
+        </section>
+    </main>
+
+    <aside>
+        <section class="card">
+            <h3>Question Palette</h3>
+            <p class="hint" style="margin-top:10px">
+                Select a question to navigate.
+            </p>
+
+            <div class="palette" id="palette"></div>
+
+            <div class="legend">
+                <p>🔵 Current question</p>
+                <p>🟢 Answered question</p>
+                <p>⚪ Not answered</p>
+            </div>
+
+            <hr style="margin:20px 0;border:0;border-top:1px solid #e5eaf4">
+
+            <p><strong>Total Questions:</strong> 3</p>
+            <p style="margin-top:10px">
+                <strong>Question Type:</strong> Multiple Select
+            </p>
+
+            <button class="primary"
+                    style="width:100%;margin-top:20px"
+                    onclick="submitExam()">Submit Test</button>
+        </section>
+    </aside>
+</div>
+
+<footer>ExamPro — Java and Hibernate Practice Assessment</footer>
+
+<script>
+// Sample data based on Main2.java.
+// Correct options are configured for demonstration.
+
+const questions = [
+    {
+        id: 1,
+        question: "What is Java?",
+        answers: [
+            { id: 1, text: "Java is Platform Independent language" },
+            { id: 2, text: "Java is Robust Language" },
+            { id: 3, text: "Java is programming language meant to build internet software" }
+        ],
+        correct: [1, 2, 3]
+    },
+    {
+        id: 2,
+        question: "What is Hibernate?",
+        answers: [
+            { id: 4, text: "Hibernate is ORM Framework" },
+            { id: 5, text: "Hibernate follows JPA rules" }
+        ],
+        correct: [4, 5]
+    },
+    {
+        id: 3,
+        question: "What are the features of Java?",
+        answers: [
+            { id: 1, text: "Java is Platform Independent language" },
+            { id: 2, text: "Java is Robust Language" }
+        ],
+        correct: [1, 2]
+    }
+];
+
+let currentQuestion = 0;
+let userAnswers = {};
+let submitted = false;
+let remainingSeconds = 300;
+let timerInterval = null;
+
+function renderQuestion() {
+    const q = questions[currentQuestion];
+
+    document.getElementById("questionCount").textContent =
+        `Question ${currentQuestion + 1} of ${questions.length}`;
+
+    document.getElementById("questionText").textContent = q.question;
+
+    document.getElementById("progressBar").style.width =
+        `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+    document.getElementById("previousBtn").disabled =
+        currentQuestion === 0;
+
+    document.getElementById("nextBtn").textContent =
+        currentQuestion === questions.length - 1 ? "Finish" : "Next";
+
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.replaceChildren();
+
+    q.answers.forEach(answer => {
+        const label = document.createElement("label");
+        label.className = "option";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = answer.id;
+        checkbox.checked =
+            (userAnswers[q.id] || []).includes(answer.id);
+
+        const span = document.createElement("span");
+        span.textContent = answer.text;
+
+        label.classList.toggle("selected", checkbox.checked);
+
+        checkbox.addEventListener("change", () => {
+            if (!userAnswers[q.id]) userAnswers[q.id] = [];
+
+            if (checkbox.checked) {
+                if (!userAnswers[q.id].includes(answer.id)) {
+                    userAnswers[q.id].push(answer.id);
+                }
+            } else {
+                userAnswers[q.id] = userAnswers[q.id]
+                    .filter(id => id !== answer.id);
+            }
+
+            label.classList.toggle("selected", checkbox.checked);
+            updatePalette();
+        });
+
+        label.append(checkbox, span);
+        optionsDiv.appendChild(label);
+    });
+
+    updatePalette();
+}
+
+function updatePalette() {
+    const palette = document.getElementById("palette");
+    palette.replaceChildren();
+
+    questions.forEach((q, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = index + 1;
+
+        if (index === currentQuestion) btn.classList.add("active");
+        if ((userAnswers[q.id] || []).length > 0) {
+            btn.classList.add("answered");
+        }
+
+        btn.onclick = () => {
+            currentQuestion = index;
+            renderQuestion();
+        };
+
+        palette.appendChild(btn);
+    });
+
+    const answered = questions.filter(
+        q => (userAnswers[q.id] || []).length > 0
+    ).length;
+
+    document.getElementById("answeredCount").textContent =
+        `Answered: ${answered}`;
+}
+
+function moveQuestion(direction) {
+    if (direction === 1 && currentQuestion === questions.length - 1) {
+        submitExam();
+        return;
+    }
+
+    currentQuestion += direction;
+    currentQuestion = Math.max(
+        0, Math.min(currentQuestion, questions.length - 1)
+    );
+
+    renderQuestion();
+}
+
+function submitExam() {
+    if (submitted) return;
+
+    if (!confirm("Are you sure you want to submit the test?")) return;
+
+    submitted = true;
+    clearInterval(timerInterval);
+
+    let score = 0;
+
+    questions.forEach(q => {
+        const selected = [...(userAnswers[q.id] || [])].sort((a, b) => a - b);
+        const correct = [...q.correct].sort((a, b) => a - b);
+
+        if (selected.length === correct.length &&
+            selected.every((id, index) => id === correct[index])) {
+            score++;
+        }
+    });
+
+    document.getElementById("examCard").hidden = true;
+    document.getElementById("resultCard").hidden = false;
+    document.getElementById("score").textContent =
+        `${score} / ${questions.length}`;
+
+    document.getElementById("resultMessage").textContent =
+        `You scored ${Math.round(score / questions.length * 100)}%.`;
+}
+
+function showReview() {
+    document.getElementById("resultCard").hidden = true;
+    document.getElementById("reviewCard").hidden = false;
+
+    const review = document.getElementById("reviewContent");
+    review.replaceChildren();
+
+    questions.forEach(q => {
+        const selected = userAnswers[q.id] || [];
+        const correct = q.correct;
+
+        const item = document.createElement("div");
+        item.className = "review-item";
+
+        const title = document.createElement("h3");
+        title.textContent = q.question;
+
+        const yourAnswer = document.createElement("p");
+        yourAnswer.textContent = "Your answers: " +
+            (selected.length
+                ? q.answers.filter(a => selected.includes(a.id))
+                    .map(a => a.text).join("; ")
+                : "Not answered");
+
+        const correctAnswer = document.createElement("p");
+        correctAnswer.className = "correct-text";
+        correctAnswer.textContent = "Expected answers: " +
+            q.answers.filter(a => correct.includes(a.id))
+                .map(a => a.text).join("; ");
+
+        item.append(title, yourAnswer, correctAnswer);
+        review.appendChild(item);
+    });
+}
+
+function restartExam() {
+    currentQuestion = 0;
+    userAnswers = {};
+    submitted = false;
+    remainingSeconds = 300;
+
+    document.getElementById("examCard").hidden = false;
+    document.getElementById("resultCard").hidden = true;
+    document.getElementById("reviewCard").hidden = true;
+
+    startTimer();
+    renderQuestion();
+}
+
+function startTimer() {
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        remainingSeconds--;
+
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = remainingSeconds % 60;
+
+        document.getElementById("timer").textContent =
+            `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+        if (remainingSeconds <= 0) {
+            clearInterval(timerInterval);
+            submitted = false;
+            submitExam();
+        }
+    }, 1000);
+}
+
+renderQuestion();
+startTimer();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Email verification | ExamPro</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <a class="brand" th:href="@{/login}"><span class="brand-mark">E</span> ExamPro</a>
+    <section class="auth-card auth-card-centered">
+        <div class="status-icon" th:text="${verified} ? '✓' : '!'"></div>
+        <p class="eyebrow">ACCOUNT VERIFICATION</p>
+        <h1 th:text="${verified} ? 'Email verified' : 'Link unavailable'"></h1>
+        <p class="muted" th:if="${verified}">Your student account is active. You can now sign in.</p>
+        <p class="muted" th:unless="${verified}">This verification link is invalid, expired, or has already been used. Request a new link to activate your account.</p>
+        <a class="button button-primary button-link" th:href="@{/login}">Continue to sign in</a>
+        <p th:unless="${verified}"><a th:href="@{/resend-verification}">Resend verification email</a></p>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create account | ExamPro</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <a class="brand" th:href="@{/login}"><span class="brand-mark">E</span> ExamPro</a>
+    <section class="auth-card">
+        <p class="eyebrow">STUDENT REGISTRATION</p>
+        <h1>Create your account</h1>
+        <p class="muted">Create a student account to access the assessment.</p>
+
+        <div class="notice notice-success" th:if="${!emailVerificationRequired}">
+            No email setup is needed. Your account will be ready as soon as you register.
+        </div>
+        <div class="notice notice-error" th:if="${emailVerificationRequired and !registrationAvailable}">
+            Email verification is enabled, but the email service is not configured. Ask the administrator for help.
+        </div>
+        <div class="notice notice-error" th:if="${formError}" th:text="${formError}"></div>
+
+        <form th:action="@{/register}" th:object="${registrationForm}" method="post" class="form-stack">
+            <label for="displayName">Full name</label>
+            <input id="displayName" th:field="*{displayName}" type="text" autocomplete="name" minlength="2" maxlength="100" required>
+            <small class="field-error" th:errors="*{displayName}"></small>
+
+            <label for="email">Email address</label>
+            <input id="email" th:field="*{email}" type="email" autocomplete="email" maxlength="254" required>
+            <small class="field-error" th:errors="*{email}"></small>
+
+            <label for="password">Password</label>
+            <input id="password" th:field="*{password}" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+            <small class="field-hint">Use at least 8 characters.</small>
+            <small class="field-error" th:errors="*{password}"></small>
+
+            <label for="confirmPassword">Confirm password</label>
+            <input id="confirmPassword" th:field="*{confirmPassword}" type="password" autocomplete="new-password" required>
+            <small class="field-error" th:errors="*{confirmPassword}"></small>
+
+            <button class="button button-primary button-full" type="submit" th:disabled="${!registrationAvailable}">
+                Create account
+            </button>
+        </form>
+
+        <p class="auth-switch">Already registered? <a th:href="@{/login}">Sign in</a></p>
+    </section>
+    <p class="auth-footnote">Passwords are stored as BCrypt hashes, never as plain text.</p>
+</main>
+</body>
+</html>
